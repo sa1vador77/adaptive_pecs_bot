@@ -22,29 +22,30 @@ async def on_startup(db: DatabaseManager):
 
 async def main():
     setup_logger()
-    
+
     bot = Bot(
         token=config.BOT_TOKEN.get_secret_value(),
-        default=DefaultBotProperties(parse_mode=ParseMode.HTML)
+        default=DefaultBotProperties(parse_mode=ParseMode.HTML),
     )
-    
+
     dp = Dispatcher()
     db = DatabaseManager(db_url=config.DATABASE_URL)
-    
+
     # Регистрация мидлварей
     dp.update.outer_middleware(DbSessionMiddleware(db.session_maker))
-    
+
     # Регистрация роутеров
     dp.include_router(communication.router)
-    
+
     # Хуки
-    
+
     logger.info("Запуск бота...")
     try:
         await on_startup(db)
         await dp.start_polling(bot)
     finally:
         await bot.session.close()
+
 
 if __name__ == "__main__":
     try:

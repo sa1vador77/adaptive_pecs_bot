@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.core import config
 from src.database.models import Card, ActionLog
 
+
 class AdaptiveService:
     """Сервис для ранжирования карточек на основе потребностей ребенка."""
 
@@ -13,9 +14,9 @@ class AdaptiveService:
     async def get_sorted_cards(session: AsyncSession, user_id: int) -> list[Card]:
         """
         Возвращает список карточек, отсортированный по умному алгоритму.
-        
+
         Алгоритм: Score = BasePriority + (Log(UsageCount) * Multiplier)
-        Использование логарифма предотвращает замусоривание топа частыми, 
+        Использование логарифма предотвращает замусоривание топа частыми,
         но низкоприоритетными запросами (например, "игрушка").
         """
         # 1. Получаем все карточки
@@ -35,10 +36,10 @@ class AdaptiveService:
 
         # 3. Вычисляем вес (Score) для каждой карточки
         ranked_cards: list[tuple[float, Card]] = []
-        
+
         for card in cards:
             usage_count = usage_map.get(card.id, 0)
-            
+
             # Логарифмическое сглаживание: log(1 + usage)
             # Если usage=0 -> 0
             # Если usage=10 -> 2.39
@@ -48,7 +49,7 @@ class AdaptiveService:
             # А Туалет (Base 80) с 0 нажатий даст:
             # 80 + 0 = 80.
             usage_score = math.log1p(usage_count) * config.WEIGHT_USAGE_FACTOR
-            
+
             total_score = card.base_priority + usage_score
             ranked_cards.append((total_score, card))
 
