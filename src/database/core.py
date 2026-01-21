@@ -29,7 +29,7 @@ class DatabaseManager:
 
 # Глобальный экземпляр менеджера БД
 db_manager = DatabaseManager(
-    db_url=config.DB_URL,
+    db_url=config.DATABASE_URL,
     echo=False,
 )
 
