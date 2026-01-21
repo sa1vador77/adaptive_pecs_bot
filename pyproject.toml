@@ -9,4 +9,5 @@ dependencies = [
     "aiosqlite>=0.22.1",
     "loguru>=0.7.3",
     "pydantic-settings>=2.12.0",
+    "sqlalchemy[asyncio]>=2.0.45",
 ]
